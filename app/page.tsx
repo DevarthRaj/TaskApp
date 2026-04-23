@@ -157,7 +157,7 @@ export default function HomePage() {
                 </div>
               </div>
               <p className={`font-[Space_Grotesk] text-[42px] font-semibold tracking-tight leading-none ${remaining >= 0 ? "text-[#e4e2e4]" : "text-[#ffb4ab]"}`}>
-                <span className="text-[#909097] text-[28px] mr-1">$</span>
+                <span className="text-[#909097] text-[28px] mr-1">₹</span>
                 {Math.abs(remaining).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 {remaining < 0 && <span className="text-sm text-[#ffb4ab]/70 ml-2 font-normal">deficit</span>}
               </p>
@@ -170,7 +170,7 @@ export default function HomePage() {
               <p className="text-sm text-[#c6c6cd] font-[Manrope] mb-4">Expected Salary</p>
               {editingSalary ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[#909097] text-xl font-[Space_Grotesk]">$</span>
+                  <span className="text-[#909097] text-xl font-[Space_Grotesk]">₹</span>
                   <input type="number" value={salaryInput} onChange={(e) => setSalaryInput(e.target.value)}
                     onBlur={submitSalary} onKeyDown={(e) => e.key === "Enter" && submitSalary()}
                     className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded text-2xl font-[Space_Grotesk] text-[#e4e2e4] focus:outline-none focus:ring-1 focus:ring-[#4edea3]/30 glass-inner-border"
@@ -178,7 +178,7 @@ export default function HomePage() {
                 </div>
               ) : (
                 <button onClick={() => { setSalaryInput(md.salary.toString()); setEditingSalary(true); }} className="flex items-center gap-1 group/sal">
-                  <span className="text-[#909097] text-xl font-[Space_Grotesk]">$</span>
+                  <span className="text-[#909097] text-xl font-[Space_Grotesk]">₹</span>
                   <span className="text-[28px] font-semibold font-[Space_Grotesk] text-[#e4e2e4] group-hover/sal:text-[#4edea3] transition-colors tracking-wide">
                     {md.salary.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>

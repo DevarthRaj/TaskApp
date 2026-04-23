@@ -65,7 +65,7 @@ export default function ExpenseModal({
           <div>
             <label className="block font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em] mb-2">Amount</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#909097] font-[Space_Grotesk]">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#909097] font-[Space_Grotesk]">₹</span>
               <input type="number" step="0.01" min="0.01" value={amount} onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full pl-9 pr-4 py-3 bg-white/5 border border-white/10 rounded text-[#e4e2e4] placeholder-[#45464d] focus:outline-none focus:border-[#4edea3]/50 focus:ring-1 focus:ring-[#4edea3]/20 transition-all font-[Space_Grotesk] text-lg glass-inner-border"
