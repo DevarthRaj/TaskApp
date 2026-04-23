@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AppData, Expense, Category } from "@/lib/types";
 import { loadData, saveData, getMonthKey, formatMonthLabel, formatCurrency, getDefaultData } from "@/lib/storage";
+import Link from "next/link";
 import ExpenseModal from "@/components/ExpenseModal";
 import CategoryPanel from "@/components/CategoryPanel";
 import MonthSummary from "@/components/MonthSummary";
@@ -109,11 +110,11 @@ export default function HomePage() {
           <div className="flex items-center gap-10">
             <h1 className="text-xl font-semibold italic text-[#e4e2e4] font-[Newsreader] tracking-tight">Flowledger</h1>
             <nav className="flex items-center gap-7">
-              {["Analytics", "Ledger", "Accounts", "Reports"].map((t, i) => (
-                <button key={t} className={`text-sm font-[Manrope] font-medium pb-1 transition-all duration-300 ${i === 1
+              {[{ label: "Analytics", href: "/analytics" }, { label: "Ledger", href: "/" }, { label: "Accounts", href: "/" }, { label: "Reports", href: "/analytics" }].map((t, i) => (
+                <Link key={t.label} href={t.href} className={`text-sm font-[Manrope] font-medium pb-1 transition-all duration-300 ${i === 1
                     ? "text-[#4edea3] border-b-2 border-[#4edea3]/50"
                     : "text-[#45464d] border-b-2 border-transparent hover:text-[#c6c6cd]"
-                  }`}>{t}</button>
+                  }`}>{t.label}</Link>
               ))}
             </nav>
           </div>
