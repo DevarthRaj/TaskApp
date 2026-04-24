@@ -1,23 +1,23 @@
+export type TransactionType = "INCOME" | "EXPENSE";
+
 export interface Category {
   id: string;
   name: string;
   color: string;
+  isDefault: boolean;
+  createdAt: string;
 }
 
-export interface Expense {
+export interface Transaction {
   id: string;
+  type: TransactionType;
   amount: number;
-  categoryId: string;
   description: string;
   date: string;
+  categoryId: string | null;
+  createdAt: string;
+  category?: Category | null;
 }
 
-export interface MonthData {
-  salary: number;
-  expenses: Expense[];
-}
-
-export interface AppData {
-  categories: Category[];
-  months: Record<string, MonthData>;
-}
+// Legacy alias for backward compat in components
+export type Expense = Transaction;

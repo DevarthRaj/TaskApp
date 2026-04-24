@@ -1,62 +1,97 @@
-import { AppData, Category } from "./types";
+import { Category, Transaction, TransactionType } from "./types";
 
-const STORAGE_KEY = "flowledger-data";
+// ─── API Helpers ────────────────────────────────────────────
+
+const API_BASE = "/api";
+
+// ── Categories ──
+
+export async function fetchCategories(): Promise<Category[]> {
+  const res = await fetch(`${API_BASE}/categories`);
+  if (!res.ok) throw new Error("Failed to fetch categories");
+  return res.json();
+}
+
+export async function createCategory(name: string, color: string): Promise<Category> {
+  const res = await fetch(`${API_BASE}/categories`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, color }),
+  });
+  if (!res.ok) throw new Error("Failed to create category");
+  return res.json();
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/categories/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete category");
+}
+
+// ── Transactions ──
+
+export async function fetchTransactions(month: string): Promise<Transaction[]> {
+  const res = await fetch(`${API_BASE}/transactions?month=${month}`);
+  if (!res.ok) throw new Error("Failed to fetch transactions");
+  return res.json();
+}
+
+export async function fetchMultiMonthTransactions(months: string[]): Promise<Transaction[]> {
+  const res = await fetch(`${API_BASE}/transactions?months=${months.join(",")}`);
+  if (!res.ok) throw new Error("Failed to fetch transactions");
+  return res.json();
+}
+
+export async function createTransaction(data: {
+  type: TransactionType;
+  amount: number;
+  description: string;
+  date: string;
+  categoryId?: string | null;
+}): Promise<Transaction> {
+  const res = await fetch(`${API_BASE}/transactions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create transaction");
+  return res.json();
+}
+
+export async function updateTransaction(
+  id: string,
+  data: Partial<{
+    type: TransactionType;
+    amount: number;
+    description: string;
+    date: string;
+    categoryId: string | null;
+  }>
+): Promise<Transaction> {
+  const res = await fetch(`${API_BASE}/transactions/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update transaction");
+  return res.json();
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/transactions/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete transaction");
+}
+
+// ─── Utility Functions (kept from original) ────────────────
 
 const PRESET_COLORS = [
-  "#10b981", // emerald
-  "#f43f5e", // rose
-  "#3b82f6", // blue
-  "#f59e0b", // amber
-  "#8b5cf6", // violet
-  "#06b6d4", // cyan
-  "#ec4899", // pink
-  "#14b8a6", // teal
-  "#f97316", // orange
-  "#6366f1", // indigo
-  "#84cc16", // lime
-  "#e11d48", // crimson
+  "#10b981", "#f43f5e", "#3b82f6", "#f59e0b", "#8b5cf6",
+  "#06b6d4", "#ec4899", "#14b8a6", "#f97316", "#6366f1",
+  "#84cc16", "#e11d48",
 ];
-
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: "cat-food", name: "Food & Dining", color: "#f59e0b" },
-  { id: "cat-health", name: "Health & Wellness", color: "#10b981" },
-  { id: "cat-transport", name: "Transportation", color: "#3b82f6" },
-  { id: "cat-investments", name: "Investments", color: "#8b5cf6" },
-  { id: "cat-entertainment", name: "Entertainment", color: "#ec4899" },
-  { id: "cat-housing", name: "Housing", color: "#06b6d4" },
-  { id: "cat-others", name: "Others", color: "#6b7280" },
-];
-
-export function getDefaultData(): AppData {
-  return {
-    categories: DEFAULT_CATEGORIES,
-    months: {},
-  };
-}
-
-export function loadData(): AppData {
-  if (typeof window === "undefined") return getDefaultData();
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return getDefaultData();
-    const parsed = JSON.parse(raw) as AppData;
-    // Ensure categories exist
-    if (!parsed.categories || parsed.categories.length === 0) {
-      parsed.categories = DEFAULT_CATEGORIES;
-    }
-    if (!parsed.months) {
-      parsed.months = {};
-    }
-    return parsed;
-  } catch {
-    return getDefaultData();
-  }
-}
-
-export function saveData(data: AppData): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
 
 export function getNextColor(existingCategories: Category[]): string {
   const usedColors = new Set(existingCategories.map((c) => c.color));

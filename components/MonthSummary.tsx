@@ -1,17 +1,20 @@
 "use client";
 
-import { Category, Expense } from "@/lib/types";
+import { Category, Transaction } from "@/lib/types";
 import { formatCurrency } from "@/lib/storage";
 
 interface MonthSummaryProps {
-  salary: number;
-  expenses: Expense[];
+  transactions: Transaction[];
   categories: Category[];
 }
 
-export default function MonthSummary({ salary, expenses, categories }: MonthSummaryProps) {
+export default function MonthSummary({ transactions, categories }: MonthSummaryProps) {
+  const income = transactions.filter((t) => t.type === "INCOME");
+  const expenses = transactions.filter((t) => t.type === "EXPENSE");
+
+  const totalIncome = income.reduce((s, t) => s + t.amount, 0);
   const totalSpent = expenses.reduce((s, e) => s + e.amount, 0);
-  const remaining = salary - totalSpent;
+  const remaining = totalIncome - totalSpent;
 
   const breakdown = categories
     .map((cat) => {
