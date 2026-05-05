@@ -102,9 +102,9 @@ export default function HomePage() {
     );
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#131315]">
-      {/* ─── Sidebar ─── */}
-      <aside className="w-56 flex-shrink-0 bg-[#0F172A]/30 backdrop-blur-[25px] border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.3)] flex flex-col py-6 z-40">
+    <div className="flex h-full w-full overflow-hidden bg-[#131315] flex-col md:flex-row relative">
+      {/* ─── Sidebar (Desktop) ─── */}
+      <aside className="hidden md:flex w-56 flex-shrink-0 bg-[#0F172A]/30 backdrop-blur-[25px] border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.3)] flex-col py-6 z-40">
         <div className="px-6 mb-10">
           <h2 className="font-[Space_Grotesk] text-[11px] font-bold text-[#4edea3] uppercase tracking-[0.15em]">
             Terminal_01
@@ -153,14 +153,14 @@ export default function HomePage() {
       </aside>
 
       {/* ─── Main ─── */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0 pb-[72px] md:pb-0">
         {/* Top bar */}
-        <header className="flex-shrink-0 flex items-center justify-between px-10 h-[72px] border-b border-white/10 bg-[#0F172A]/40 backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(16,185,129,0.08)]">
-          <div className="flex items-center gap-10">
-            <h1 className="text-xl font-semibold italic text-[#e4e2e4] font-[Newsreader] tracking-tight">
+        <header className="flex-shrink-0 flex items-center justify-between px-4 md:px-10 h-[60px] md:h-[72px] border-b border-white/10 bg-[#0F172A]/40 backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(16,185,129,0.08)] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-6 md:gap-10">
+            <h1 className="text-lg md:text-xl font-semibold italic text-[#e4e2e4] font-[Newsreader] tracking-tight">
               Flowledger
             </h1>
-            <nav className="flex items-center gap-7">
+            <nav className="hidden sm:flex items-center gap-4 md:gap-7">
               {[
                 { label: "Analytics", href: "/analytics" },
                 { label: "Ledger", href: "/" },
@@ -181,13 +181,13 @@ export default function HomePage() {
               ))}
             </nav>
           </div>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 md:gap-5 ml-auto">
             <button
               onClick={() => openModal("EXPENSE")}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-[Manrope] font-medium border border-white/10 rounded text-[#c6c6cd] hover:bg-white/5 hover:border-white/20 transition-all glass-inner-border"
+              className="hidden sm:flex items-center gap-2 px-4 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-[Manrope] font-medium border border-white/10 rounded text-[#c6c6cd] hover:bg-white/5 hover:border-white/20 transition-all glass-inner-border whitespace-nowrap"
             >
               <span className="material-symbols-outlined text-[16px]">add</span>
-              Add Transaction
+              Transaction
             </button>
             <div className="flex items-center gap-3 text-[#c6c6cd]">
               <button className="hover:text-[#4edea3] transition-colors">
@@ -205,11 +205,11 @@ export default function HomePage() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto px-10 py-8">
+        <main className="flex-1 overflow-y-auto px-4 md:px-10 py-6 md:py-8">
           {/* Top cards */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* Liquid Assets */}
-            <div className="col-span-2 bg-[#353436]/40 backdrop-blur-xl border border-white/10 rounded-lg p-7 relative overflow-hidden liquid-bg-gradient shadow-[0_10px_40px_rgba(0,0,0,0.2)] glass-inner-border group hover:border-[#4edea3]/20 transition-all duration-500">
+            <div className="col-span-1 lg:col-span-2 bg-[#353436]/40 backdrop-blur-xl border border-white/10 rounded-lg p-5 md:p-7 relative overflow-hidden liquid-bg-gradient shadow-[0_10px_40px_rgba(0,0,0,0.2)] glass-inner-border group hover:border-[#4edea3]/20 transition-all duration-500">
               <div className="absolute -right-8 -top-8 w-36 h-36 bg-[#4edea3]/10 rounded-full blur-3xl group-hover:bg-[#4edea3]/15 transition-all duration-500" />
               <div className="flex items-start justify-between mb-6">
                 <p className="font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em]">
@@ -234,11 +234,11 @@ export default function HomePage() {
                 </div>
               </div>
               <p
-                className={`font-[Space_Grotesk] text-[42px] font-semibold tracking-tight leading-none ${
+                className={`font-[Space_Grotesk] text-[32px] md:text-[42px] font-semibold tracking-tight leading-none ${
                   remaining >= 0 ? "text-[#e4e2e4]" : "text-[#ffb4ab]"
                 }`}
               >
-                <span className="text-[#909097] text-[28px] mr-1">₹</span>
+                <span className="text-[#909097] text-[20px] md:text-[28px] mr-1">₹</span>
                 {Math.abs(remaining).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -250,7 +250,7 @@ export default function HomePage() {
             </div>
 
             {/* Total Inflow — Dynamic Income */}
-            <div className="bg-[#353436]/40 backdrop-blur-xl border border-white/10 rounded-lg p-7 relative overflow-hidden liquid-bg-gradient shadow-[0_10px_40px_rgba(0,0,0,0.2)] glass-inner-border group hover:border-[#ffb95f]/20 transition-all duration-500">
+            <div className="col-span-1 bg-[#353436]/40 backdrop-blur-xl border border-white/10 rounded-lg p-5 md:p-7 relative overflow-hidden liquid-bg-gradient shadow-[0_10px_40px_rgba(0,0,0,0.2)] glass-inner-border group hover:border-[#ffb95f]/20 transition-all duration-500">
               <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#ffb95f]/10 rounded-full blur-3xl group-hover:bg-[#ffb95f]/15 transition-all duration-500" />
               <p className="font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em] mb-1">
                 Total Inflow
@@ -298,8 +298,8 @@ export default function HomePage() {
           </div>
 
           {/* Bottom: Categories + Expenses */}
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-1 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="col-span-1 space-y-4 md:space-y-6">
               <CategoryPanel
                 categories={categories}
                 transactions={transactions}
@@ -309,7 +309,7 @@ export default function HomePage() {
             </div>
 
             {/* Expense Log */}
-            <div className="col-span-2">
+            <div className="col-span-1 lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-[Newsreader] text-lg font-medium text-[#e4e2e4]">
                   Expense Log
@@ -339,15 +339,12 @@ export default function HomePage() {
               ) : (
                 <div className="bg-[#1f1f21]/60 backdrop-blur-xl border border-white/5 rounded-lg overflow-hidden glass-inner-border shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
                   {/* Header */}
-                  <div className="grid grid-cols-[80px_1fr_130px_110px_36px] gap-4 px-6 py-3 border-b border-white/10">
-                    {["Date", "Description", "Category", "Amount", ""].map((h) => (
-                      <span
-                        key={h}
-                        className="font-[Space_Grotesk] text-[10px] font-bold text-[#909097] uppercase tracking-[0.12em]"
-                      >
-                        {h}
-                      </span>
-                    ))}
+                  <div className="grid grid-cols-[60px_1fr_80px_28px] sm:grid-cols-[80px_1fr_130px_110px_36px] gap-2 md:gap-4 px-4 md:px-6 py-3 border-b border-white/10">
+                    <span className="font-[Space_Grotesk] text-[9px] md:text-[10px] font-bold text-[#909097] uppercase tracking-[0.12em]">Date</span>
+                    <span className="font-[Space_Grotesk] text-[9px] md:text-[10px] font-bold text-[#909097] uppercase tracking-[0.12em]">Description</span>
+                    <span className="font-[Space_Grotesk] text-[9px] md:text-[10px] font-bold text-[#909097] uppercase tracking-[0.12em] hidden sm:block">Category</span>
+                    <span className="font-[Space_Grotesk] text-[9px] md:text-[10px] font-bold text-[#909097] uppercase tracking-[0.12em] text-right sm:text-left">Amount</span>
+                    <span></span>
                   </div>
                   {/* Rows */}
                   {visible.map((exp, i) => {
@@ -356,39 +353,45 @@ export default function HomePage() {
                     return (
                       <div
                         key={exp.id}
-                        className="grid grid-cols-[80px_1fr_130px_110px_36px] gap-4 items-center px-6 py-4 border-b border-white/5 last:border-0 hover:bg-white/[0.03] transition-colors group animate-fade-in"
+                        className="grid grid-cols-[60px_1fr_80px_28px] sm:grid-cols-[80px_1fr_130px_110px_36px] gap-2 md:gap-4 items-center px-4 md:px-6 py-3 md:py-4 border-b border-white/5 last:border-0 hover:bg-white/[0.03] transition-colors group animate-fade-in"
                         style={{ animationDelay: `${i * 30}ms` }}
                       >
-                        <span className="font-[Space_Grotesk] text-xs text-[#909097] tracking-wide">
+                        <span className="font-[Space_Grotesk] text-[10px] md:text-xs text-[#909097] tracking-wide">
                           {d.toLocaleDateString("en-US", { month: "short", day: "2-digit" })}
                         </span>
-                        <span className="text-sm text-[#e4e2e4] font-[Manrope] font-medium truncate">
-                          {exp.description}
-                        </span>
-                        <span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs md:text-sm text-[#e4e2e4] font-[Manrope] font-medium truncate">
+                            {exp.description}
+                          </span>
+                          {/* Mobile category */}
+                          {cat && (
+                            <span className="sm:hidden text-[9px] text-[#909097] truncate mt-0.5" style={{ color: cat.color }}>
+                              {cat.name}
+                            </span>
+                          )}
+                        </div>
+                        <span className="hidden sm:block">
                           {cat && (
                             <span
-                              className="inline-block px-3 py-0.5 rounded font-[Space_Grotesk] text-[9px] font-bold uppercase tracking-[0.12em]"
+                              className="inline-block px-3 py-0.5 rounded font-[Space_Grotesk] text-[9px] font-bold uppercase tracking-[0.12em] truncate max-w-full"
                               style={{
                                 backgroundColor: cat.color + "18",
                                 color: cat.color,
                                 boxShadow: `0 0 8px ${cat.color}15`,
                               }}
                             >
-                              {cat.name.length > 12
-                                ? cat.name.slice(0, 12) + "…"
-                                : cat.name}
+                              {cat.name.length > 15 ? cat.name.slice(0, 15) + "…" : cat.name}
                             </span>
                           )}
                         </span>
-                        <span className="text-sm font-[Space_Grotesk] tracking-wide text-[#c6c6cd] text-right">
+                        <span className="text-xs md:text-sm font-[Space_Grotesk] tracking-wide text-[#c6c6cd] text-right">
                           -{formatCurrency(exp.amount)}
                         </span>
                         <button
                           onClick={() => handleDeleteTransaction(exp.id)}
-                          className="opacity-0 group-hover:opacity-100 text-[#45464d] hover:text-[#ffb4ab] transition-all"
+                          className="md:opacity-0 group-hover:opacity-100 text-[#45464d] hover:text-[#ffb4ab] transition-all flex justify-end"
                         >
-                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          <span className="material-symbols-outlined text-[14px] md:text-[16px]">delete</span>
                         </button>
                       </div>
                     );
@@ -411,11 +414,36 @@ export default function HomePage() {
       {/* Floating button */}
       <button
         onClick={() => openModal("EXPENSE")}
-        className="fixed bottom-8 right-8 flex items-center gap-2 px-7 py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-sm tracking-wide rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
+        className="fixed bottom-[88px] md:bottom-8 right-4 md:right-8 flex items-center gap-2 px-5 md:px-7 py-3 md:py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs md:text-sm tracking-wide rounded-full md:rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
       >
-        <span className="material-symbols-outlined text-[20px]">add</span>
-        Add Expense
+        <span className="material-symbols-outlined text-[18px] md:text-[20px]">add</span>
+        <span className="hidden sm:inline">Add Expense</span>
       </button>
+
+      {/* ─── Mobile Bottom Nav ─── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#0F172A]/80 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
+        {[
+          { icon: "dashboard", href: "/", active: true },
+          { icon: "monitoring", href: "/analytics" },
+          { icon: "account_balance", href: "/" },
+          { icon: "menu", href: "/" },
+        ].map((item, i) => (
+          <Link
+            key={i}
+            href={item.href}
+            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
+              item.active ? "text-[#4edea3]" : "text-[#45464d] hover:text-[#c6c6cd]"
+            }`}
+          >
+            <span
+              className="material-symbols-outlined text-[24px]"
+              style={item.active ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              {item.icon}
+            </span>
+          </Link>
+        ))}
+      </nav>
 
       <TransactionModal
         isOpen={isModalOpen}

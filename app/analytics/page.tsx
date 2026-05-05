@@ -138,9 +138,9 @@ export default function AnalyticsPage() {
     );
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#0e1511] text-[#dde4dd] font-[Manrope]">
-      {/* ─── Sidebar ─── */}
-      <nav className="w-64 flex-shrink-0 h-full bg-[#161B22] border-r border-[#2D333B] flex flex-col py-8 z-40">
+    <div className="flex flex-col md:flex-row h-full w-full overflow-hidden bg-[#0e1511] text-[#dde4dd] font-[Manrope]">
+      {/* ─── Sidebar (Desktop) ─── */}
+      <nav className="hidden md:flex w-64 flex-shrink-0 h-full bg-[#161B22] border-r border-[#2D333B] flex-col py-8 z-40">
         <div className="px-6 pb-4 border-b border-[#2D333B] flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center text-sm font-bold text-white">
             U
@@ -187,9 +187,9 @@ export default function AnalyticsPage() {
       </nav>
 
       {/* ─── Main ─── */}
-      <main className="flex-1 min-w-0 overflow-y-auto p-16 max-w-[1400px] mx-auto w-full flex flex-col gap-10">
+      <main className="flex-1 min-w-0 overflow-y-auto p-4 md:p-16 max-w-[1400px] mx-auto w-full flex flex-col gap-6 md:gap-10 pb-[88px] md:pb-16">
         {/* Header */}
-        <header className="flex items-end justify-between border-b border-[#3c4a42] pb-6">
+        <header className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-[#3c4a42] pb-4 md:pb-6 gap-4 md:gap-0">
           <div>
             <h1 className="font-[Newsreader] text-[32px] font-normal text-[#dde4dd]">
               Financial Intelligence
@@ -206,7 +206,7 @@ export default function AnalyticsPage() {
         </header>
 
         {/* KPI Cards */}
-        <section className="grid grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <div className="border border-[#3c4a42] p-6 bg-[#1a211d] flex flex-col gap-2 group hover:border-[#4edea3] transition-colors">
             <div className="font-[Space_Grotesk] text-[12px] font-semibold text-[#bbcabf] uppercase tracking-[0.15em]">
               Total Spent
@@ -258,9 +258,9 @@ export default function AnalyticsPage() {
         </section>
 
         {/* Charts */}
-        <section className="grid grid-cols-12 gap-6 min-h-[400px]">
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 min-h-[400px]">
           {/* Donut */}
-          <div className="col-span-5 border border-[#3c4a42] bg-[#1a211d] p-6 flex flex-col">
+          <div className="col-span-1 md:col-span-5 border border-[#3c4a42] bg-[#1a211d] p-6 flex flex-col">
             <h3 className="font-[Space_Grotesk] text-[12px] font-semibold text-[#bbcabf] uppercase tracking-[0.15em] mb-6 border-b border-[#3c4a42] pb-2">
               Spending by Category
             </h3>
@@ -302,7 +302,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Bar chart */}
-          <div className="col-span-7 border border-[#3c4a42] bg-[#1a211d] p-6 flex flex-col">
+          <div className="col-span-1 md:col-span-7 border border-[#3c4a42] bg-[#1a211d] p-6 flex flex-col">
             <h3 className="font-[Space_Grotesk] text-[12px] font-semibold text-[#bbcabf] uppercase tracking-[0.15em] mb-6 border-b border-[#3c4a42] pb-2">
               Monthly Cash Flow Trend
             </h3>
@@ -355,7 +355,7 @@ export default function AnalyticsPage() {
         </section>
 
         {/* Bottom lists */}
-        <section className="grid grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Largest expenses */}
           <div className="border border-[#3c4a42] bg-[#1a211d] flex flex-col">
             <div className="p-6 border-b border-[#3c4a42]">
@@ -434,6 +434,31 @@ export default function AnalyticsPage() {
           </div>
         </section>
       </main>
+
+      {/* ─── Mobile Bottom Nav ─── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#161B22]/90 backdrop-blur-2xl border-t border-[#2D333B] flex items-center justify-around px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
+        {[
+          { icon: "grid_view", href: "/", active: false },
+          { icon: "monitoring", href: "/analytics", active: true },
+          { icon: "account_balance", href: "/" },
+          { icon: "menu", href: "/" },
+        ].map((item, i) => (
+          <Link
+            key={i}
+            href={item.href}
+            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
+              item.active ? "text-[#10b981]" : "text-[#8B949E] hover:text-[#dde4dd]"
+            }`}
+          >
+            <span
+              className="material-symbols-outlined text-[24px]"
+              style={item.active ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              {item.icon}
+            </span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
