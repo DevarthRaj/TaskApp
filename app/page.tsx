@@ -210,8 +210,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* Liquid Assets */}
             <div className="col-span-1 lg:col-span-2 bg-[#353436]/40 backdrop-blur-xl border border-white/10 rounded-lg p-5 md:p-7 relative overflow-hidden liquid-bg-gradient shadow-[0_10px_40px_rgba(0,0,0,0.2)] glass-inner-border group hover:border-[#4edea3]/20 transition-all duration-500">
-              <div className="absolute -right-8 -top-8 w-36 h-36 bg-[#4edea3]/10 rounded-full blur-3xl group-hover:bg-[#4edea3]/15 transition-all duration-500" />
-              <div className="flex items-start justify-between mb-6">
+              <div className="absolute -right-8 -top-8 w-36 h-36 bg-[#4edea3]/10 rounded-full blur-3xl group-hover:bg-[#4edea3]/15 transition-all duration-500 pointer-events-none" />
+              <div className="flex items-start justify-between mb-6 relative z-10">
                 <p className="font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em]">
                   Liquid Assets
                 </p>
@@ -268,9 +268,14 @@ export default function HomePage() {
                       key={inc.id}
                       className="flex items-center justify-between text-sm group/inc"
                     >
-                      <span className="text-[#c6c6cd] font-[Manrope] truncate mr-2">
-                        {inc.description}
-                      </span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-[#909097] font-[Space_Grotesk] text-[10px] tracking-wide whitespace-nowrap">
+                          {new Date(inc.date).toLocaleDateString("en-US", { month: "short", day: "2-digit" })}
+                        </span>
+                        <span className="text-[#c6c6cd] font-[Manrope] truncate">
+                          {inc.description}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[#4edea3] font-[Space_Grotesk] text-xs tracking-wide whitespace-nowrap">
                           +{formatCurrency(inc.amount)}
@@ -292,7 +297,7 @@ export default function HomePage() {
                 className="flex items-center gap-1.5 text-[#4edea3] hover:text-[#6aedb8] transition-colors font-[Space_Grotesk] text-[11px] font-bold uppercase tracking-[0.1em]"
               >
                 <span className="material-symbols-outlined text-[16px]">add</span>
-                Add Income
+                Add Inflow
               </button>
             </div>
           </div>
