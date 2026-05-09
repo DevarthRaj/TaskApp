@@ -43,3 +43,11 @@ model Transaction {
   @@index([type])
   @@map("transactions")
 }
+
+model SavedDescription {
+  id        String   @id @default(cuid())
+  text      String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("saved_descriptions")
+}

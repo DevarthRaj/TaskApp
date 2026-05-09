@@ -7,7 +7,7 @@ const API_BASE = "/api";
 // ── Categories ──
 
 export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch(`${API_BASE}/categories`);
+  const res = await fetch(`${API_BASE}/categories`, { cache: 'no-store' });
   if (!res.ok) throw new Error("Failed to fetch categories");
   return res.json();
 }
@@ -32,13 +32,16 @@ export async function deleteCategory(id: string): Promise<void> {
 // ── Transactions ──
 
 export async function fetchTransactions(month: string): Promise<Transaction[]> {
-  const res = await fetch(`${API_BASE}/transactions?month=${month}`);
-  if (!res.ok) throw new Error("Failed to fetch transactions");
+  const res = await fetch(`${API_BASE}/transactions?month=${month}`, { cache: 'no-store' });
+  if (!res.ok) {
+    console.error(`fetchTransactions failed: ${res.status} ${res.statusText} for URL ${res.url}`);
+    throw new Error("Failed to fetch transactions");
+  }
   return res.json();
 }
 
 export async function fetchMultiMonthTransactions(months: string[]): Promise<Transaction[]> {
-  const res = await fetch(`${API_BASE}/transactions?months=${months.join(",")}`);
+  const res = await fetch(`${API_BASE}/transactions?months=${months.join(",")}`, { cache: 'no-store' });
   if (!res.ok) throw new Error("Failed to fetch transactions");
   return res.json();
 }
@@ -83,6 +86,31 @@ export async function deleteTransaction(id: string): Promise<void> {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete transaction");
+}
+
+// ── Saved Descriptions ──
+
+export async function fetchSavedDescriptions(): Promise<{ id: string; text: string }[]> {
+  const res = await fetch(`${API_BASE}/saved-descriptions`, { cache: 'no-store' });
+  if (!res.ok) throw new Error("Failed to fetch saved descriptions");
+  return res.json();
+}
+
+export async function createSavedDescription(text: string): Promise<{ id: string; text: string }> {
+  const res = await fetch(`${API_BASE}/saved-descriptions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error("Failed to save description");
+  return res.json();
+}
+
+export async function deleteSavedDescription(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/saved-descriptions/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete saved description");
 }
 
 // ─── Utility Functions (kept from original) ────────────────
