@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/transactions?month=2026-04 — List transactions for a month
 // GET /api/transactions?months=2026-04,2026-03,2026-02 — List for multiple months
 export async function GET(request: NextRequest) {

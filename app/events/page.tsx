@@ -301,8 +301,8 @@ export default function EventsPage() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#1a1a1c] border border-white/10 rounded-xl w-full max-w-md shadow-2xl p-6 animate-modal-in">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#1a1a1c] border-t sm:border border-white/10 rounded-t-2xl sm:rounded-xl w-full max-w-md shadow-2xl p-6 animate-modal-in max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-[Newsreader] text-lg text-[#e4e2e4]">
                 {editingEvent ? "Edit Event" : "New Event"}
@@ -392,19 +392,19 @@ export default function EventsPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-8">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 py-2.5 border border-white/10 rounded text-sm text-[#909097] font-[Manrope] hover:bg-white/5 transition-colors"
+                className="flex-1 py-3 border border-white/10 rounded text-sm text-[#909097] font-[Manrope] hover:bg-white/5 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={!formName.trim() || saving}
-                className="flex-1 py-2.5 bg-[#4edea3]/20 border border-[#4edea3]/30 rounded text-sm font-[Space_Grotesk] font-bold text-[#4edea3] hover:bg-[#4edea3]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-3 bg-[#4edea3]/20 border border-[#4edea3]/30 rounded text-sm font-[Space_Grotesk] font-bold text-[#4edea3] hover:bg-[#4edea3]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {saving ? "Saving…" : editingEvent ? "Save Changes" : "Create Event"}
+                {saving ? "Saving…" : editingEvent ? "Save" : "Create"}
               </button>
             </div>
           </div>
@@ -413,30 +413,30 @@ export default function EventsPage() {
 
       {/* Detail Modal */}
       {showDetailModal && selectedEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#1a1a1c] border border-white/10 rounded-xl w-full max-w-2xl shadow-2xl p-6 animate-modal-in max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between mb-6">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#1a1a1c] border-t sm:border border-white/10 rounded-t-2xl sm:rounded-xl w-full max-w-2xl shadow-2xl p-5 sm:p-6 animate-modal-in max-h-[92vh] flex flex-col">
+            <div className="flex items-center justify-between mb-5 sm:mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: selectedEvent.color }} />
-                <h2 className="font-[Newsreader] text-xl text-[#e4e2e4]">{selectedEvent.name}</h2>
+                <h2 className="font-[Newsreader] text-lg sm:text-xl text-[#e4e2e4] truncate max-w-[200px] sm:max-w-none">{selectedEvent.name}</h2>
               </div>
-              <button onClick={() => setShowDetailModal(false)} className="text-[#45464d] hover:text-[#c6c6cd] transition-colors">
+              <button onClick={() => setShowDetailModal(false)} className="p-1 text-[#45464d] hover:text-[#c6c6cd] transition-colors">
                 <span className="material-symbols-outlined text-[24px]">close</span>
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto space-y-6 pr-1 sm:pr-2 custom-scrollbar">
               {/* Event Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-lg p-4 border border-white/5">
-                  <p className="text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1">Total Spent</p>
-                  <p className="text-2xl font-[Space_Grotesk] font-bold" style={{ color: selectedEvent.color }}>
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                <div className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/5">
+                  <p className="text-[9px] sm:text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1">Total Spent</p>
+                  <p className="text-xl sm:text-2xl font-[Space_Grotesk] font-bold" style={{ color: selectedEvent.color }}>
                     {formatCurrency(selectedEvent.transactions?.filter(t => t.type === "EXPENSE").reduce((sum, t) => sum + t.amount, 0) || 0)}
                   </p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4 border border-white/5">
-                  <p className="text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1">Transactions</p>
-                  <p className="text-2xl font-[Space_Grotesk] font-bold text-[#e4e2e4]">
+                <div className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/5">
+                  <p className="text-[9px] sm:text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1">Transactions</p>
+                  <p className="text-xl sm:text-2xl font-[Space_Grotesk] font-bold text-[#e4e2e4]">
                     {selectedEvent.transactions?.length || 0}
                   </p>
                 </div>
@@ -452,26 +452,28 @@ export default function EventsPage() {
               )}
 
               {/* Transaction List */}
-              <div>
+              <div className="pb-4">
                 <p className="text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-3">Linked Transactions</p>
                 <div className="space-y-2">
                   {!selectedEvent.transactions || selectedEvent.transactions.length === 0 ? (
-                    <p className="text-xs text-[#45464d] italic py-4 text-center border border-white/5 border-dashed rounded">No transactions linked to this event yet.</p>
+                    <p className="text-xs text-[#45464d] italic py-8 text-center border border-white/5 border-dashed rounded">No transactions linked to this event yet.</p>
                   ) : (
                     selectedEvent.transactions.map((t) => (
-                      <div key={t.id} className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/5 hover:bg-white/[0.07] transition-colors">
+                      <div key={t.id} className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/5 hover:bg-white/[0.07] transition-colors gap-3">
                         <div className="flex flex-col min-w-0">
                           <span className="text-xs text-[#e4e2e4] font-medium truncate">{t.description}</span>
-                          <span className="text-[10px] text-[#45464d]">
-                            {new Date(t.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] text-[#45464d] flex-shrink-0">
+                              {new Date(t.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            </span>
                             {t.category && (
-                              <span className="ml-2 px-1.5 py-0.5 rounded-sm" style={{ backgroundColor: t.category.color + "15", color: t.category.color }}>
+                              <span className="px-1.5 py-0.5 rounded-[2px] text-[8px] font-bold uppercase tracking-wider truncate max-w-[80px]" style={{ backgroundColor: t.category.color + "15", color: t.category.color }}>
                                 {t.category.name}
                               </span>
                             )}
-                          </span>
+                          </div>
                         </div>
-                        <span className={`text-sm font-[Space_Grotesk] font-bold ${t.type === "INCOME" ? "text-[#4edea3]" : "text-[#ffb4ab]"}`}>
+                        <span className={`text-sm font-[Space_Grotesk] font-bold flex-shrink-0 ${t.type === "INCOME" ? "text-[#4edea3]" : "text-[#ffb4ab]"}`}>
                           {t.type === "INCOME" ? "+" : "-"}{formatCurrency(t.amount)}
                         </span>
                       </div>
@@ -481,16 +483,16 @@ export default function EventsPage() {
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-white/10 flex justify-end gap-3">
+            <div className="mt-4 pt-4 border-t border-white/10 flex flex-col-reverse sm:flex-row justify-between gap-3">
                <button 
                 onClick={(e) => openDeleteConfirm(selectedEvent.id, e)}
-                className="px-4 py-2 text-xs font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] text-[#ffb4ab] hover:bg-[#ffb4ab]/10 rounded transition-colors"
+                className="w-full sm:w-auto px-4 py-2.5 text-[10px] font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] text-[#ffb4ab]/60 hover:text-[#ffb4ab] hover:bg-[#ffb4ab]/10 rounded transition-all"
               >
                 Delete Event
               </button>
               <button 
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-2 bg-white/10 hover:bg-white/15 text-[#e4e2e4] rounded text-xs font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] transition-all"
+                className="w-full sm:w-auto px-8 py-2.5 bg-white/10 hover:bg-white/15 text-[#e4e2e4] rounded text-xs font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] transition-all"
               >
                 Close
               </button>
@@ -501,8 +503,8 @@ export default function EventsPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#1a1a1c] border border-white/10 rounded-xl w-full max-w-sm shadow-2xl p-6 animate-modal-in">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#1a1a1c] border-t sm:border border-white/10 rounded-t-2xl sm:rounded-xl w-full max-w-sm shadow-2xl p-6 animate-modal-in">
             <div className="flex items-center gap-3 mb-4 text-[#ffb4ab]">
               <span className="material-symbols-outlined text-[24px]">warning</span>
               <h2 className="font-[Newsreader] text-lg text-[#e4e2e4]">Delete Event</h2>
@@ -516,7 +518,7 @@ export default function EventsPage() {
               <button
                 onClick={() => handlePerformDelete(true)}
                 disabled={deleting}
-                className="w-full py-3 bg-[#ffb4ab]/20 border border-[#ffb4ab]/30 rounded text-xs font-[Space_Grotesk] font-bold text-[#ffb4ab] hover:bg-[#ffb4ab]/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-[#ffb4ab]/20 border border-[#ffb4ab]/30 rounded text-xs font-[Space_Grotesk] font-bold text-[#ffb4ab] hover:bg-[#ffb4ab]/30 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">delete_forever</span>
                 Delete Transactions with Event
@@ -525,7 +527,7 @@ export default function EventsPage() {
               <button
                 onClick={() => handlePerformDelete(false)}
                 disabled={deleting}
-                className="w-full py-3 bg-white/5 border border-white/10 rounded text-xs font-[Space_Grotesk] font-bold text-[#c6c6cd] hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-white/5 border border-white/10 rounded text-xs font-[Space_Grotesk] font-bold text-[#c6c6cd] hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">link_off</span>
                 Just Unlink Transactions
@@ -542,6 +544,7 @@ export default function EventsPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

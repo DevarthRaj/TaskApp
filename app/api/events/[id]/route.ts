@@ -62,22 +62,36 @@ export async function PUT(request: Request, { params }: Params) {
   }
 }
 
-// DELETE /api/events/[id] — Delete event (transactions become unlinked, not deleted)
-export async function DELETE(_req: Request, { params }: Params) {
+// DELETE /api/events/[id]?deleteTransactions=true|false
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const shouldDeleteTransactions = searchParams.get("deleteTransactions") === "true";
 
-    // Unlink transactions first (eventId → null)
-    await prisma.transaction.updateMany({
-      where: { eventId: id },
-      data: { eventId: null },
+    if (shouldDeleteTransactions) {
+      // Hard delete transactions linked to this event
+      await prisma.transaction.deleteMany({
+        where: { eventId: id },
+      });
+    } else {
+      // Just unlink transactions (eventId -> null)
+      await prisma.transaction.updateMany({
+        where: { eventId: id },
+        data: { eventId: null },
+      });
+    }
+
+    await prisma.event.delete({
+      where: { id },
     });
-
-    await prisma.event.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete event:", error);
-    return NextResponse.json({ error: "Failed to delete event" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete event" },
+      { status: 500 }
+    );
   }
 }

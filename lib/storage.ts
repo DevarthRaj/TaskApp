@@ -163,8 +163,8 @@ export async function updateEvent(
   return res.json();
 }
 
-export async function deleteEvent(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/events/${id}`, { method: "DELETE" });
+export async function deleteEvent(id: string, deleteTransactions = false): Promise<void> {
+  const res = await fetch(`${API_BASE}/events/${id}?deleteTransactions=${deleteTransactions}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete event");
 }
 
