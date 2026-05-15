@@ -1,0 +1,376 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Event, Category } from "@/lib/types";
+import {
+  fetchEvents,
+  fetchCategories,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  formatCurrency,
+} from "@/lib/storage";
+import Link from "next/link";
+
+const EVENT_COLORS = [
+  "#4edea3", "#f43f5e", "#3b82f6", "#f59e0b", "#8b5cf6",
+  "#06b6d4", "#ec4899", "#f97316", "#84cc16", "#e11d48",
+];
+
+export default function EventsPage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
+  // form state
+  const [formName, setFormName] = useState("");
+  const [formDesc, setFormDesc] = useState("");
+  const [formDate, setFormDate] = useState("");
+  const [formColor, setFormColor] = useState(EVENT_COLORS[0]);
+  const [formCatIds, setFormCatIds] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    const [evs, cats] = await Promise.all([fetchEvents(), fetchCategories()]);
+    setEvents(evs);
+    setCategories(cats);
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openCreate = () => {
+    setEditingEvent(null);
+    setFormName(""); setFormDesc(""); setFormDate("");
+    setFormColor(EVENT_COLORS[0]); setFormCatIds([]);
+    setShowModal(true);
+  };
+
+  const openEdit = (ev: Event) => {
+    setEditingEvent(ev);
+    setFormName(ev.name);
+    setFormDesc(ev.description ?? "");
+    setFormDate(ev.date ? ev.date.slice(0, 10) : "");
+    setFormColor(ev.color);
+    setFormCatIds(ev.categories?.map((c) => c.id) ?? []);
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    if (!formName.trim()) return;
+    setSaving(true);
+    try {
+      const payload = {
+        name: formName.trim(),
+        description: formDesc.trim() || undefined,
+        date: formDate || undefined,
+        color: formColor,
+        categoryIds: formCatIds,
+      };
+      if (editingEvent) {
+        const updated = await updateEvent(editingEvent.id, payload);
+        setEvents((prev) => prev.map((e) => (e.id === updated.id ? { ...e, ...updated } : e)));
+      } else {
+        const created = await createEvent(payload);
+        setEvents((prev) => [created, ...prev]);
+      }
+      setShowModal(false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this event? Transactions will be unlinked but not deleted.")) return;
+    await deleteEvent(id);
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+  };
+
+  const toggleCat = (id: string) =>
+    setFormCatIds((prev) => prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]);
+
+  if (!isLoaded)
+    return (
+      <div className="flex items-center justify-center h-screen w-full bg-[#131315]">
+        <div className="w-6 h-6 border-2 border-[#4edea3] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+
+  return (
+    <div className="flex h-full w-full overflow-hidden bg-[#131315] flex-col md:flex-row relative">
+      {/* Sidebar */}
+      <aside className="hidden md:flex w-56 flex-shrink-0 bg-[#0F172A]/30 backdrop-blur-[25px] border-r border-white/10 flex-col py-6 z-40">
+        <div className="px-6 mb-10">
+          <h2 className="font-[Space_Grotesk] text-[11px] font-bold text-[#4edea3] uppercase tracking-[0.15em]">Terminal_01</h2>
+          <p className="font-[Space_Grotesk] text-[9px] text-[#45464d] uppercase tracking-[0.2em] mt-1">High Net Worth Mode</p>
+        </div>
+        <nav className="flex-1 space-y-0.5 px-3">
+          {[
+            { icon: "dashboard", label: "Dashboard", href: "/" },
+            { icon: "event", label: "Event Planner", href: "/events", active: true },
+            { icon: "monitoring", label: "Analytics", href: "/analytics" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`w-full flex items-center gap-4 px-3 py-3 text-sm font-[Manrope] transition-all duration-300 rounded ${
+                item.active
+                  ? "bg-[#4edea3]/10 text-[#4edea3] border-r-2 border-[#4edea3]"
+                  : "text-[#45464d] hover:bg-white/5 hover:text-[#c6c6cd]"
+              }`}
+            >
+              <span className="material-symbols-outlined text-[18px]" style={item.active ? { fontVariationSettings: "'FILL' 1" } : {}}>{item.icon}</span>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Header */}
+        <header className="flex-shrink-0 flex items-center justify-between px-4 md:px-10 h-[60px] md:h-[72px] border-b border-white/10 bg-[#0F172A]/40 backdrop-blur-[20px]">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="font-[Newsreader] text-lg font-semibold italic text-[#e4e2e4] tracking-tight">Flowledger</Link>
+            <nav className="hidden sm:flex items-center gap-6">
+              {[
+                { label: "Ledger", href: "/" },
+                { label: "Event Planner", href: "/events", active: true },
+                { label: "Analytics", href: "/analytics" },
+              ].map((t) => (
+                <Link
+                  key={t.label}
+                  href={t.href}
+                  className={`text-sm font-[Manrope] font-medium pb-1 transition-all duration-300 ${
+                    t.active
+                      ? "text-[#4edea3] border-b-2 border-[#4edea3]/50"
+                      : "text-[#45464d] border-b-2 border-transparent hover:text-[#c6c6cd]"
+                  }`}
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs tracking-wide rounded hover:bg-[#4edea3]/30 transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">add</span>
+            New Event
+          </button>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 overflow-y-auto px-4 md:px-10 py-8">
+          <div className="mb-6">
+            <h1 className="font-[Newsreader] text-2xl font-medium text-[#e4e2e4]">Event Planner</h1>
+            <p className="text-[#45464d] text-sm font-[Manrope] mt-1">Create events and track expenses for each one.</p>
+          </div>
+
+          {events.length === 0 ? (
+            <div className="bg-[#1f1f21]/40 border border-white/5 border-dashed rounded-lg p-16 text-center">
+              <span className="material-symbols-outlined text-[48px] text-[#353436] block mb-3">event</span>
+              <p className="text-[#909097] text-sm font-[Manrope] mb-1">No events yet</p>
+              <p className="text-[#45464d] text-xs font-[Manrope]">Click <span className="text-[#4edea3]">+ New Event</span> to get started</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {events.map((ev) => (
+                <div
+                  key={ev.id}
+                  className="bg-[#1f1f21]/60 backdrop-blur-xl border border-white/5 rounded-lg p-5 hover:border-white/10 transition-all group relative overflow-hidden"
+                  style={{ boxShadow: `0 0 30px ${ev.color}08` }}
+                >
+                  {/* colour accent */}
+                  <div className="absolute top-0 left-0 w-1 h-full rounded-l-lg" style={{ backgroundColor: ev.color }} />
+
+                  <div className="pl-3">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-[Space_Grotesk] text-sm font-bold text-[#e4e2e4] tracking-wide">{ev.name}</h3>
+                        {ev.date && (
+                          <p className="text-[10px] text-[#45464d] font-[Manrope] mt-0.5">
+                            {new Date(ev.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEdit(ev)} className="p-1 text-[#45464d] hover:text-[#c6c6cd] transition-colors">
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                        <button onClick={() => handleDelete(ev.id)} className="p-1 text-[#45464d] hover:text-[#ffb4ab] transition-colors">
+                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {ev.description && (
+                      <p className="text-xs text-[#909097] font-[Manrope] mb-3 leading-relaxed">{ev.description}</p>
+                    )}
+
+                    {/* Categories */}
+                    {ev.categories && ev.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {ev.categories.map((cat) => (
+                          <span
+                            key={cat.id}
+                            className="px-2 py-0.5 rounded text-[9px] font-[Space_Grotesk] font-bold uppercase tracking-[0.1em]"
+                            style={{ backgroundColor: cat.color + "18", color: cat.color }}
+                          >
+                            {cat.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Totals */}
+                    <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                      <span className="text-[10px] text-[#45464d] font-[Manrope]">
+                        {ev.transactionCount ?? 0} transactions
+                      </span>
+                      <span className="font-[Space_Grotesk] text-sm font-semibold" style={{ color: ev.color }}>
+                        {formatCurrency(ev.totalSpent ?? 0)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#0F172A]/80 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around px-2 z-50">
+        {[
+          { icon: "dashboard", href: "/" },
+          { icon: "event", href: "/events", active: true },
+          { icon: "monitoring", href: "/analytics" },
+        ].map((item, i) => (
+          <Link key={i} href={item.href}
+            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${item.active ? "text-[#4edea3]" : "text-[#45464d]"}`}
+          >
+            <span className="material-symbols-outlined text-[24px]" style={item.active ? { fontVariationSettings: "'FILL' 1" } : {}}>{item.icon}</span>
+          </Link>
+        ))}
+      </nav>
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#1a1a1c] border border-white/10 rounded-xl w-full max-w-md shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-[Newsreader] text-lg text-[#e4e2e4]">
+                {editingEvent ? "Edit Event" : "New Event"}
+              </h2>
+              <button onClick={() => setShowModal(false)} className="text-[#45464d] hover:text-[#c6c6cd] transition-colors">
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Name */}
+              <div>
+                <label className="block text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1.5">Event Name *</label>
+                <input
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="e.g. Goa Trip, Wedding"
+                  className="w-full bg-[#131315] border border-white/10 rounded px-3 py-2.5 text-sm text-[#e4e2e4] font-[Manrope] placeholder-[#45464d] focus:outline-none focus:border-[#4edea3]/50 transition-colors"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1.5">Description</label>
+                <input
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  placeholder="Optional notes"
+                  className="w-full bg-[#131315] border border-white/10 rounded px-3 py-2.5 text-sm text-[#e4e2e4] font-[Manrope] placeholder-[#45464d] focus:outline-none focus:border-[#4edea3]/50 transition-colors"
+                />
+              </div>
+
+              {/* Date */}
+              <div>
+                <label className="block text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-1.5">Date</label>
+                <input
+                  type="date"
+                  value={formDate}
+                  onChange={(e) => setFormDate(e.target.value)}
+                  className="w-full bg-[#131315] border border-white/10 rounded px-3 py-2.5 text-sm text-[#e4e2e4] font-[Manrope] focus:outline-none focus:border-[#4edea3]/50 transition-colors"
+                />
+              </div>
+
+              {/* Colour picker */}
+              <div>
+                <label className="block text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-2">Colour</label>
+                <div className="flex gap-2 flex-wrap">
+                  {EVENT_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setFormColor(c)}
+                      className="w-6 h-6 rounded-full transition-all"
+                      style={{
+                        backgroundColor: c,
+                        boxShadow: formColor === c ? `0 0 0 2px #131315, 0 0 0 4px ${c}` : "none",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Categories */}
+              {categories.length > 0 && (
+                <div>
+                  <label className="block text-[10px] font-[Space_Grotesk] font-bold text-[#45464d] uppercase tracking-[0.1em] mb-2">Linked Categories</label>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => {
+                      const selected = formCatIds.includes(cat.id);
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => toggleCat(cat.id)}
+                          className="px-3 py-1 rounded text-[10px] font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] transition-all"
+                          style={{
+                            backgroundColor: selected ? cat.color + "30" : cat.color + "10",
+                            color: cat.color,
+                            border: `1px solid ${selected ? cat.color + "60" : cat.color + "20"}`,
+                          }}
+                        >
+                          {selected && "✓ "}{cat.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-2.5 border border-white/10 rounded text-sm text-[#909097] font-[Manrope] hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={!formName.trim() || saving}
+                className="flex-1 py-2.5 bg-[#4edea3]/20 border border-[#4edea3]/30 rounded text-sm font-[Space_Grotesk] font-bold text-[#4edea3] hover:bg-[#4edea3]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {saving ? "Saving…" : editingEvent ? "Save Changes" : "Create Event"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

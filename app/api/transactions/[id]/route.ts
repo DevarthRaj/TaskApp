@@ -9,7 +9,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { type, amount, description, date, categoryId } = body;
+    const { type, amount, description, date, categoryId, eventId } = body;
 
     const updateData: Record<string, unknown> = {};
     if (type !== undefined) updateData.type = type;
@@ -17,11 +17,12 @@ export async function PUT(
     if (description !== undefined) updateData.description = description.trim();
     if (date !== undefined) updateData.date = new Date(date);
     if (categoryId !== undefined) updateData.categoryId = categoryId;
+    if (eventId !== undefined) updateData.eventId = eventId;
 
     const transaction = await prisma.transaction.update({
       where: { id },
       data: updateData,
-      include: { category: true },
+      include: { category: true, event: true },
     });
 
     return NextResponse.json(transaction);

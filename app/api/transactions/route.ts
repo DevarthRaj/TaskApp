@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     const transactions = await prisma.transaction.findMany({
       where: dateFilter,
-      include: { category: true },
+      include: { category: true, event: true },
       orderBy: { date: "desc" },
     });
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { type, amount, description, date, categoryId } = body;
+    const { type, amount, description, date, categoryId, eventId } = body;
 
     if (!type || !amount || !description || !date) {
       return NextResponse.json(
@@ -76,9 +76,10 @@ export async function POST(request: Request) {
         amount: parseFloat(amount),
         description: description.trim(),
         date: new Date(date),
-        categoryId: type === "EXPENSE" ? categoryId : null,
+        categoryId: type === "EXPENSE" ? (categoryId ?? null) : null,
+        eventId: eventId ?? null,
       },
-      include: { category: true },
+      include: { category: true, event: true },
     });
 
     return NextResponse.json(transaction, { status: 201 });

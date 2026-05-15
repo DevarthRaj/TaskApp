@@ -24,6 +24,7 @@ model Category {
   createdAt DateTime @default(now())
 
   transactions Transaction[]
+  events       Event[]        // implicit many-to-many
 
   @@map("categories")
 }
@@ -35,13 +36,30 @@ model Transaction {
   description String
   date        DateTime
   categoryId  String?
+  eventId     String?
   createdAt   DateTime        @default(now())
 
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  event    Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
 
   @@index([date])
   @@index([type])
+  @@index([eventId])
   @@map("transactions")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  date        DateTime?
+  color       String    @default("#4edea3")
+  createdAt   DateTime  @default(now())
+
+  transactions Transaction[]
+  categories   Category[]    // implicit many-to-many
+
+  @@map("events")
 }
 
 model SavedDescription {

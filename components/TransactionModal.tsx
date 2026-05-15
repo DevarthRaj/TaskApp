@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Category, Transaction, TransactionType } from "@/lib/types";
+import { Category, Transaction, TransactionType, Event } from "@/lib/types";
 import {
   createTransaction,
   fetchSavedDescriptions,
+  fetchEvents,
   createSavedDescription,
   deleteSavedDescription,
 } from "@/lib/storage";
@@ -44,6 +45,10 @@ export default function TransactionModal({
   const [showPicker, setShowPicker] = useState(false);
   const [savePromptVisible, setSavePromptVisible] = useState(false);
 
+  // ── Events ──
+  const [events, setEvents] = useState<Event[]>([]);
+  const [eventId, setEventId] = useState<string>("");
+
   // Reset type when defaultType changes
   useEffect(() => {
     setType(defaultType);
@@ -71,6 +76,7 @@ export default function TransactionModal({
           });
         })
         .catch(() => {});
+      fetchEvents().then((evs) => { if (active) setEvents(evs); }).catch(() => {});
       return () => { active = false; };
     }
   }, [isOpen]);
@@ -118,6 +124,7 @@ export default function TransactionModal({
         description: description.trim(),
         date,
         categoryId: type === "EXPENSE" ? categoryId : null,
+        eventId: eventId || null,
       });
       onAdd(transaction);
       setAmount("");
@@ -212,7 +219,26 @@ export default function TransactionModal({
                 </div>
               )}
 
-              {/* ── Description ── */}
+              {/* Link to Event (optional) */}
+              {events.length > 0 && (
+                <div>
+                  <label className="block font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em] mb-2">
+                    Link to Event <span className="text-[#45464d] normal-case tracking-normal font-normal">(optional)</span>
+                  </label>
+                  <select
+                    value={eventId}
+                    onChange={(e) => setEventId(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded text-[#e4e2e4] focus:outline-none focus:border-[#4edea3]/50 focus:ring-1 focus:ring-[#4edea3]/20 transition-all appearance-none cursor-pointer glass-inner-border font-[Manrope]"
+                  >
+                    <option value="" className="bg-[#1f1f21]">— No event —</option>
+                    {events.map((ev) => (
+                      <option key={ev.id} value={ev.id} className="bg-[#1f1f21]">{ev.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+
               <div>
                 <label className="block font-[Space_Grotesk] text-[11px] font-bold text-[#909097] uppercase tracking-[0.1em] mb-2">
                   Description

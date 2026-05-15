@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Category, Transaction, TransactionType } from "@/lib/types";
+import { Category, Transaction, TransactionType, Event } from "@/lib/types";
 import {
   fetchCategories,
   fetchTransactions,
+  fetchEvents,
   deleteTransaction,
   getMonthKey,
   formatMonthLabel,
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [currentMonth, setCurrentMonth] = useState(() => getMonthKey(new Date()));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalDefaultType, setModalDefaultType] = useState<TransactionType>("EXPENSE");
@@ -53,7 +55,7 @@ export default function HomePage() {
   }, [currentMonth]);
 
   useEffect(() => {
-    Promise.all([loadCategories(), loadTransactions()]).then(() => setIsLoaded(true));
+    Promise.all([loadCategories(), loadTransactions(), fetchEvents().then(setEvents)]).then(() => setIsLoaded(true));
   }, [loadCategories, loadTransactions]);
 
   // ── Derived state ──
@@ -163,15 +165,15 @@ export default function HomePage() {
             <nav className="hidden sm:flex items-center gap-4 md:gap-7">
               {[
                 { label: "Analytics", href: "/analytics" },
-                { label: "Ledger", href: "/" },
-                { label: "Accounts", href: "/" },
+                { label: "Ledger", href: "/", active: true },
+                { label: "Event Planner", href: "/events" },
                 { label: "Reports", href: "/analytics" },
               ].map((t, i) => (
                 <Link
                   key={t.label}
                   href={t.href}
                   className={`text-sm font-[Manrope] font-medium pb-1 transition-all duration-300 ${
-                    i === 1
+                    t.active
                       ? "text-[#4edea3] border-b-2 border-[#4edea3]/50"
                       : "text-[#45464d] border-b-2 border-transparent hover:text-[#c6c6cd]"
                   }`}
@@ -368,6 +370,16 @@ export default function HomePage() {
                           <span className="text-xs md:text-sm text-[#e4e2e4] font-[Manrope] font-medium truncate">
                             {exp.description}
                           </span>
+                          {/* Event pill */}
+                          {exp.event && (
+                            <span
+                              className="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded text-[9px] font-[Space_Grotesk] font-bold uppercase tracking-[0.1em] w-fit"
+                              style={{ backgroundColor: exp.event.color + "20", color: exp.event.color }}
+                            >
+                              <span className="material-symbols-outlined text-[10px]">event</span>
+                              {exp.event.name}
+                            </span>
+                          )}
                           {/* Mobile category */}
                           {cat && (
                             <span className="sm:hidden text-[9px] text-[#909097] truncate mt-0.5" style={{ color: cat.color }}>

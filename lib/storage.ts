@@ -1,4 +1,4 @@
-import { Category, Transaction, TransactionType } from "./types";
+import { Category, Event, Transaction, TransactionType } from "./types";
 
 // ─── API Helpers ────────────────────────────────────────────
 
@@ -52,6 +52,7 @@ export async function createTransaction(data: {
   description: string;
   date: string;
   categoryId?: string | null;
+  eventId?: string | null;
 }): Promise<Transaction> {
   const res = await fetch(`${API_BASE}/transactions`, {
     method: "POST",
@@ -111,6 +112,60 @@ export async function deleteSavedDescription(id: string): Promise<void> {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete saved description");
+}
+
+// ── Events ──
+
+export async function fetchEvents(): Promise<Event[]> {
+  const res = await fetch(`${API_BASE}/events`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch events");
+  return res.json();
+}
+
+export async function fetchEvent(id: string): Promise<Event & { transactions: Transaction[] }> {
+  const res = await fetch(`${API_BASE}/events/${id}`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch event");
+  return res.json();
+}
+
+export async function createEvent(data: {
+  name: string;
+  description?: string;
+  date?: string;
+  color?: string;
+  categoryIds?: string[];
+}): Promise<Event> {
+  const res = await fetch(`${API_BASE}/events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create event");
+  return res.json();
+}
+
+export async function updateEvent(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+    date?: string;
+    color?: string;
+    categoryIds?: string[];
+  }
+): Promise<Event> {
+  const res = await fetch(`${API_BASE}/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update event");
+  return res.json();
+}
+
+export async function deleteEvent(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/events/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete event");
 }
 
 // ─── Utility Functions (kept from original) ────────────────
