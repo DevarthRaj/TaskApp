@@ -136,23 +136,6 @@ export default function HomePage() {
             </button>
           ))}
         </nav>
-        <div className="px-4 space-y-1 mt-auto">
-          <button className="w-full py-3 rounded border border-[#4edea3]/50 bg-[#4edea3]/10 text-[#4edea3] hover:bg-[#4edea3]/20 transition-all text-[10px] tracking-[0.15em] uppercase font-[Space_Grotesk] font-bold shadow-[0_0_15px_rgba(16,185,129,0.1)] glass-inner-border mb-3">
-            Manage Categories
-          </button>
-          {[
-            { icon: "verified_user", label: "Security" },
-            { icon: "help_outline", label: "Support" },
-          ].map((l) => (
-            <button
-              key={l.label}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-xs text-[#45464d] hover:text-[#c6c6cd] hover:bg-white/5 transition-all font-[Manrope] rounded"
-            >
-              <span className="material-symbols-outlined text-[16px]">{l.icon}</span>
-              {l.label}
-            </button>
-          ))}
-        </div>
       </aside>
 
       {/* ─── Main ─── */}

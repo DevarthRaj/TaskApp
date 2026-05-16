@@ -118,9 +118,9 @@ export default function ChatBot({ currentMonth }: { currentMonth?: string }) {
       {/* ── Glass Chat Panel ── */}
       <div
         className={`fixed z-[49] flex flex-col overflow-hidden transition-all duration-500 ease-out
-          bottom-0 left-0 right-0 h-[78vh] rounded-t-[32px]
-          md:bottom-28 md:left-auto md:right-8 md:w-[420px] md:h-[560px] md:rounded-[28px]
-          ${isOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-100 translate-y-full md:translate-y-8 md:opacity-0 pointer-events-none"}`}
+          top-[8%] left-4 right-4 bottom-[84px] rounded-[28px]
+          md:top-auto md:bottom-28 md:left-auto md:right-8 md:w-[420px] md:h-[560px]
+          ${isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}
         style={{
           background: "rgba(10, 15, 30, 0.78)",
           backdropFilter: "blur(60px) saturate(180%)",
@@ -132,10 +132,6 @@ export default function ChatBot({ currentMonth }: { currentMonth?: string }) {
         {/* Top shine line */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
 
-        {/* Mobile drag handle */}
-        <div className="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 rounded-full bg-white/20" />
-        </div>
 
         {/* Header */}
         <div
