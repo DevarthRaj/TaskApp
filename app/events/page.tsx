@@ -12,6 +12,7 @@ import {
   formatCurrency,
 } from "@/lib/storage";
 import Link from "next/link";
+import ChatBot from "@/components/ChatBot";
 
 const EVENT_COLORS = [
   "#4edea3", "#f43f5e", "#3b82f6", "#f59e0b", "#8b5cf6",
@@ -547,6 +548,8 @@ export default function EventsPage() {
         </div>
       )}
 
+      {/* FlowBot — RAG Finance AI */}
+      <ChatBot />
     </div>
   );
 }

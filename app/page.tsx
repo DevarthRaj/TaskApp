@@ -15,6 +15,7 @@ import Link from "next/link";
 import TransactionModal from "@/components/TransactionModal";
 import CategoryPanel from "@/components/CategoryPanel";
 import MonthSummary from "@/components/MonthSummary";
+import ChatBot from "@/components/ChatBot";
 
 const NAV_ITEMS = [
   { icon: "dashboard", label: "Dashboard", active: true },
@@ -428,14 +429,17 @@ export default function HomePage() {
         </main>
       </div>
 
-      {/* Floating button */}
+      {/* Floating button — shifted left on desktop to not overlap chat button */}
       <button
         onClick={() => openModal("EXPENSE")}
-        className="fixed bottom-[88px] md:bottom-8 right-4 md:right-8 flex items-center gap-2 px-5 md:px-7 py-3 md:py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs md:text-sm tracking-wide rounded-full md:rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
+        className="fixed bottom-[88px] md:bottom-8 right-[72px] md:right-28 flex items-center gap-2 px-5 md:px-7 py-3 md:py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs md:text-sm tracking-wide rounded-full md:rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
       >
         <span className="material-symbols-outlined text-[18px] md:text-[20px]">add</span>
         <span className="hidden sm:inline">Add Expense</span>
       </button>
+
+      {/* FlowBot — RAG Finance AI */}
+      <ChatBot currentMonth={currentMonth} />
 
       {/* ─── Mobile Bottom Nav ─── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#0F172A]/80 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
