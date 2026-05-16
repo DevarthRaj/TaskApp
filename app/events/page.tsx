@@ -285,16 +285,18 @@ export default function EventsPage() {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#0F172A]/80 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around px-2 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-[#0F172A]/80 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
         {[
-          { icon: "dashboard", href: "/" },
-          { icon: "event", href: "/events", active: true },
-          { icon: "monitoring", href: "/analytics" },
+          { icon: "dashboard", label: "Ledger", href: "/" },
+          { icon: "monitoring", label: "Analytics", href: "/analytics" },
+          { icon: "celebration", label: "Events", href: "/events", active: true },
+          { icon: "account_balance", label: "Finance", href: "/" },
         ].map((item, i) => (
           <Link key={i} href={item.href}
-            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${item.active ? "text-[#4edea3]" : "text-[#45464d]"}`}
+            className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${item.active ? "text-[#4edea3]" : "text-[#45464d] hover:text-[#c6c6cd]"}`}
           >
             <span className="material-symbols-outlined text-[24px]" style={item.active ? { fontVariationSettings: "'FILL' 1" } : {}}>{item.icon}</span>
+            <span className="text-[9px] font-[Space_Grotesk] font-bold uppercase tracking-[0.08em]">{item.label}</span>
           </Link>
         ))}
       </nav>
