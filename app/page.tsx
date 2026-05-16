@@ -193,9 +193,6 @@ export default function HomePage() {
               Transaction
             </button>
             <div className="flex items-center gap-3 text-[#c6c6cd]">
-              <button className="hover:text-[#4edea3] transition-colors">
-                <span className="material-symbols-outlined text-[20px]">settings</span>
-              </button>
               <button className="hover:text-[#4edea3] transition-colors relative">
                 <span className="material-symbols-outlined text-[20px]">notifications</span>
                 <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-[#4edea3] shadow-[0_0_5px_rgba(78,222,163,0.8)]" />
@@ -429,10 +426,10 @@ export default function HomePage() {
         </main>
       </div>
 
-      {/* Floating button — shifted left on desktop to not overlap chat button */}
+      {/* Floating Add Expense button — bottom LEFT */}
       <button
         onClick={() => openModal("EXPENSE")}
-        className="fixed bottom-[88px] md:bottom-8 right-[72px] md:right-28 flex items-center gap-2 px-5 md:px-7 py-3 md:py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs md:text-sm tracking-wide rounded-full md:rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
+        className="fixed bottom-[88px] md:bottom-8 left-4 md:left-8 flex items-center gap-2 px-5 md:px-7 py-3 md:py-3.5 bg-[#4edea3]/20 text-[#4edea3] border border-[#4edea3]/30 font-[Space_Grotesk] font-bold text-xs md:text-sm tracking-wide rounded-full md:rounded hover:bg-[#4edea3]/30 hover:border-[#4edea3]/50 transition-all duration-300 shadow-[0_0_25px_rgba(78,222,163,0.15)] glass-inner-border z-40 active:scale-95"
       >
         <span className="material-symbols-outlined text-[18px] md:text-[20px]">add</span>
         <span className="hidden sm:inline">Add Expense</span>
