@@ -16,21 +16,94 @@ enum TransactionType {
   EXPENSE
 }
 
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+
+  accounts          Account[]
+  sessions          Session[]
+  categories        Category[]
+  transactions      Transaction[]
+  events            Event[]
+  savedDescriptions SavedDescription[]
+
+  @@map("users")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  ip        String
+  email     String
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([ip, createdAt])
+  @@index([email, createdAt])
+  @@map("login_attempts")
+}
+
 model Category {
   id        String   @id @default(cuid())
+  userId    String
   name      String
   color     String
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
 
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   events       Event[]        // implicit many-to-many
 
+  @@index([userId])
   @@map("categories")
 }
 
 model Transaction {
   id          String          @id @default(cuid())
+  userId      String
   type        TransactionType
   amount      Float
   description String
@@ -39,9 +112,11 @@ model Transaction {
   eventId     String?
   createdAt   DateTime        @default(now())
 
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   event    Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
 
+  @@index([userId])
   @@index([date])
   @@index([type])
   @@index([eventId])
@@ -50,22 +125,30 @@ model Transaction {
 
 model Event {
   id          String    @id @default(cuid())
+  userId      String
   name        String
   description String?
   date        DateTime?
   color       String    @default("#4edea3")
   createdAt   DateTime  @default(now())
 
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   categories   Category[]    // implicit many-to-many
 
+  @@index([userId])
   @@map("events")
 }
 
 model SavedDescription {
   id        String   @id @default(cuid())
-  text      String   @unique
+  userId    String
+  text      String
   createdAt DateTime @default(now())
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, text])
   @@map("saved_descriptions")
 }
+

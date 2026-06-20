@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 // PUT /api/transactions/[id] — Update a transaction
 export async function PUT(
@@ -7,9 +8,42 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const { id } = await params;
+
+    // Check ownership
+    const existing = await prisma.transaction.findFirst({
+      where: { id, userId },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+    }
+
     const body = await request.json();
     const { type, amount, description, date, categoryId, eventId } = body;
+
+    // Verify category and event ownership if updated
+    if (categoryId) {
+      const cat = await prisma.category.findUnique({
+        where: { id: categoryId, userId }
+      });
+      if (!cat) {
+        return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+      }
+    }
+    if (eventId) {
+      const ev = await prisma.event.findUnique({
+        where: { id: eventId, userId }
+      });
+      if (!ev) {
+        return NextResponse.json({ error: "Invalid event" }, { status: 400 });
+      }
+    }
 
     const updateData: Record<string, unknown> = {};
     if (type !== undefined) updateData.type = type;
@@ -41,7 +75,21 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const { id } = await params;
+
+    // Check ownership
+    const existing = await prisma.transaction.findFirst({
+      where: { id, userId },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+    }
 
     await prisma.transaction.delete({
       where: { id },
@@ -56,3 +104,4 @@ export async function DELETE(
     );
   }
 }
+

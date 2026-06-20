@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const userId = session.user.id;
+
   const body = await req.json();
   const { message } = body;
 
@@ -24,17 +31,24 @@ export async function POST(req: NextRequest) {
 
   const [transactions, categories, events] = await Promise.all([
     prisma.transaction.findMany({
-      where: { date: { gte: sixMonthsAgo } },
+      where: { userId, date: { gte: sixMonthsAgo } },
       include: { category: true, event: true },
       orderBy: { date: "desc" },
     }),
-    prisma.category.findMany(),
+    prisma.category.findMany({
+      where: { userId },
+    }),
     prisma.event.findMany({
+      where: { userId },
       include: {
-        transactions: { select: { amount: true, type: true } },
+        transactions: {
+          where: { userId, type: "EXPENSE" },
+          select: { amount: true, type: true }
+        },
       },
     }),
   ]);
+
 
   // ── 2. AUGMENT — Build structured context from retrieved data ─────────
 

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "@node-rs/argon2";
 
 const prisma = new PrismaClient();
 
@@ -13,19 +14,52 @@ const DEFAULT_CATEGORIES = [
 ];
 
 async function main() {
-  console.log("🌱 Seeding default categories...");
+  console.log("🌱 Seeding database...");
 
+  // 1. Check/create default admin user
+  const email = "admin@flowledger.com";
+  let admin = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!admin) {
+    console.log(`  👤 Creating default user: ${email}...`);
+    const passwordHash = await hash("Password123!", {
+      memoryCost: 65536,
+      timeCost: 3,
+      outputLen: 32,
+      parallelism: 4,
+    });
+
+    admin = await prisma.user.create({
+      data: {
+        name: "Admin User",
+        email,
+        passwordHash,
+      },
+    });
+    console.log("  ✅ Created user!");
+  } else {
+    console.log(`  ⏭️  Skipped user creation (exists: ${email})`);
+  }
+
+  // 2. Seed categories for the user
+  console.log(`  🌱 Seeding default categories for user ${email}...`);
   for (const cat of DEFAULT_CATEGORIES) {
-    // Upsert by name to avoid duplicates on re-seed
     const existing = await prisma.category.findFirst({
-      where: { name: cat.name },
+      where: { name: cat.name, userId: admin.id },
     });
 
     if (!existing) {
-      await prisma.category.create({ data: cat });
-      console.log(`  ✅ Created: ${cat.name}`);
+      await prisma.category.create({
+        data: {
+          ...cat,
+          userId: admin.id,
+        },
+      });
+      console.log(`    ✅ Created category: ${cat.name}`);
     } else {
-      console.log(`  ⏭️  Skipped (exists): ${cat.name}`);
+      console.log(`    ⏭️  Skipped category (exists): ${cat.name}`);
     }
   }
 
@@ -40,3 +74,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

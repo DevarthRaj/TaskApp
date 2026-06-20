@@ -16,6 +16,8 @@ import TransactionModal from "@/components/TransactionModal";
 import CategoryPanel from "@/components/CategoryPanel";
 import MonthSummary from "@/components/MonthSummary";
 import ChatBot from "@/components/ChatBot";
+import { useSession, signOut } from "next-auth/react";
+
 
 const NAV_ITEMS = [
   { icon: "dashboard", label: "Dashboard", active: true },
@@ -27,7 +29,11 @@ const NAV_ITEMS = [
 ];
 
 export default function HomePage() {
+  const { data: session } = useSession();
+  const user = session?.user;
+
   const [categories, setCategories] = useState<Category[]>([]);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [currentMonth, setCurrentMonth] = useState(() => getMonthKey(new Date()));
@@ -176,14 +182,25 @@ export default function HomePage() {
               Transaction
             </button>
             <div className="flex items-center gap-3 text-[#c6c6cd]">
-              <button className="hover:text-[#4edea3] transition-colors relative">
+              <button className="hover:text-[#4edea3] transition-colors relative" title="Notifications">
                 <span className="material-symbols-outlined text-[20px]">notifications</span>
                 <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-[#4edea3] shadow-[0_0_5px_rgba(78,222,163,0.8)]" />
               </button>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="hover:text-[#ffb4ab] text-[#45464d] transition-colors flex items-center"
+                title="Sign Out"
+              >
+                <span className="material-symbols-outlined text-[20px]">logout</span>
+              </button>
             </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4edea3] to-[#00a572] flex items-center justify-center text-xs font-bold text-white shadow-[0_0_12px_rgba(78,222,163,0.3)]">
-              U
+            <div 
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4edea3] to-[#00a572] flex items-center justify-center text-xs font-bold text-white shadow-[0_0_12px_rgba(78,222,163,0.3)] cursor-help"
+              title={user?.email || "User"}
+            >
+              {user?.name?.[0]?.toUpperCase() || "U"}
             </div>
+
           </div>
         </header>
 

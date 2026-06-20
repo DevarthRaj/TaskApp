@@ -1,12 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/categories — List all categories
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const categories = await prisma.category.findMany({
+      where: { userId },
       orderBy: { createdAt: "asc" },
     });
     return NextResponse.json(categories);
@@ -22,6 +30,12 @@ export async function GET() {
 // POST /api/categories — Create a new category
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const body = await request.json();
     const { name, color } = body;
 
@@ -33,7 +47,7 @@ export async function POST(request: Request) {
     }
 
     const category = await prisma.category.create({
-      data: { name, color, isDefault: false },
+      data: { userId, name, color, isDefault: false },
     });
 
     return NextResponse.json(category, { status: 201 });
@@ -45,3 +59,4 @@ export async function POST(request: Request) {
     );
   }
 }
+
